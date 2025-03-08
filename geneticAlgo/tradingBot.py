@@ -1,7 +1,5 @@
 import random
-historical_prices = [100, 102, 98, 105, 95, 110, 120, 115, 118, 125] 
 popolation_size=4
-
 
 def create_chromosome():
     return [
@@ -12,37 +10,31 @@ def create_chromosome():
 
 def initialize_population(popolation_size):
     return [create_chromosome() for _ in range(popolation_size)]
-
-
 def fitness_function(chromosome):
-    initial_capital=1000
-    capital=initial_capital
+    initial_capital = 1000
+    price_changes = [-1.2, 3.4, -0.8, 2.1, -2.5, 1.7, -0.3, 5.8, -1.1, 3.5]
 
-    stop_loss=chromosome[0]/100
-    take_profit=chromosome[1]/100
-    trade_size=chromosome[2]/100
+    stop_loss = chromosome[0] / 100
+    take_profit = chromosome[1] / 100
+    trade_size_percentage = chromosome[2] / 100
 
-    position=None  #No Active Trade
+    capital = initial_capital
 
-    for price in range(len(historical_prices)-1):
-        current_price=historical_prices[price]
-        next_day_price=historical_prices[price+1]
+    for change in price_changes:
+        trade_size = capital * trade_size_percentage
+        profit_loss = trade_size * (change / 100)
 
-        if position is None:
-            position= (capital * trade_size)/current_price
-            entry_price = current_price 
+        if change <= -stop_loss:
+            capital=capital-abs(profit_loss)
+        elif change >= take_profit:
+            capital=capital+profit_loss
 
-        else:
-            change= (next_day_price-current_price)/current_price
+    return (capital - initial_capital)
 
-            if change<0:
-                capital -= capital*trade_size
-                if  
-                position=None
-            elif change>=take_profit:
-              capital += (capital*take_profit)
-              position=None
-    return (capital-initial_capital)
+# Example usage:
+chromosome = [2, 5, 20]  # 2% stop-loss, 5% take-profit, 20% trade size
+fitness = fitness_function(chromosome)
+print(f"The fitness score is: {fitness}")
 
 
 
@@ -51,8 +43,6 @@ def fitness_function(chromosome):
 
 
 
-test_chromosome = [20, 45, 30]  # Stop-Loss=10%, Take-Profit=20%, Trade-Size=50%
-print("Fitness Score (Profit):", fitness_function(test_chromosome))
 
 
 
